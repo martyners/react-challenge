@@ -14,9 +14,9 @@ const ImageDisplay = () => (
     <div
       style={mainContainer}
     >
-      <img src={error_img} alt="error" />
+      <img src={error_img} />
       <p style={{ color: "grey" }}>
-      Ups! Wystąpił nieoczekiwany błąd. Odśwież stronę.
+        Wystąpił nieoczekiwany błąd
       </p>
     </div>)
 );
