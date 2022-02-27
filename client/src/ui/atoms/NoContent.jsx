@@ -7,15 +7,6 @@ const mainContainer = {
   "alignItems": 'center',
 };
 
-const ImageDisplay = () => (
-  (<div style={mainContainer}>
-    <img src={no_content} />
-    <p style={{ color: "grey" }}>
-      Brak danych do wyświetlenia
-    </p>
-  </div>)
-);
-
 export const NoContent = () => {
   return (ImageDisplay() );
 };
@@ -28,7 +19,3 @@ const ImageDisplay = () => (
     </p>
   </div>)
 );
-
-export const NoContent = () => {
-  return (ImageDisplay() );
-};

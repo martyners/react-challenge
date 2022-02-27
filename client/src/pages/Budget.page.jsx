@@ -12,12 +12,20 @@ import { Loader } from "ui/atoms/Loader.jsx";
 import { NoContent } from "ui/atoms/NoContent.jsx";
 import { Error } from "ui/atoms/Error.jsx";
 import AddIcon from '@mui/icons-material/Add';
+import { AddNewBudgetRecord } from 'ui/organisms/AddNewBudgetRecord.modal';
 
 export const BudgetPage = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
+  const [open, setOpen] = React.useState(false);
+    
+  const handleClose = () => setOpen(false);
+
+  function onSubmit() {
+    alert('budget submit');
+  }
   function renderCreatedAt(content) {
     return LocalizedDate({ date: content.createdAt });
   }
@@ -46,7 +54,7 @@ export const BudgetPage = () => {
   function deleteAction(id) {
     BudgetService.remove({ ids: id })
       .then(() => {
-        RetrieveData();
+        retrieveData();
       }
       )
       .catch(() => {
@@ -56,7 +64,7 @@ export const BudgetPage = () => {
   }
 
   const btnClick = () => {
-    return (<Button variant={'contained'} color={'primary'} startIcon={<AddIcon />}>
+    return (<Button variant={'contained'} onClick={()=>setOpen(true)} color={'primary'} startIcon={<AddIcon />}>
       Zdefiniuj budżet
     </Button>);
   }
@@ -96,29 +104,24 @@ export const BudgetPage = () => {
     }
   ]);
 
-  async function RetrieveData() {
+  async function retrieveData() {
     setLoading(true);
-    try {
-      BudgetService.findAll()
-        .then(result => {
-          // po otrzymaniu odpowiedzi - zrob cos z obiektem result
-          result && setResults(result);
-        })
-        .catch(() => {
-          // obsluga erroru
-          setError(true);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    } catch (Exception) {
-      setLoading(false);
-      setError(true);
-    }
+    BudgetService.findAll()
+      .then(result => {
+        // po otrzymaniu odpowiedzi - zrob cos z obiektem result
+        result && setResults(result);
+      })
+      .catch(() => {
+        // obsluga erroru
+        setError(true);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }
 
   useEffect(() => {
-    RetrieveData()
+    retrieveData()
   }, []);
 
   return (
@@ -132,7 +135,16 @@ export const BudgetPage = () => {
           />
         }
       >
-
+        
+          <AddNewBudgetRecord
+            open={open}
+            onClose={handleClose}
+            onSubmit={onSubmit}
+            title={"Zdefiniuj budżet"}
+          >
+            no content
+          </AddNewBudgetRecord>
+          
         <Grid container>
           <Grid item xs={12}>
             {/*Logika wyswietlania */}
