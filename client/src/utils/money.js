@@ -1,5 +1,5 @@
 export const formatDollarsToCents = (value) => {
-  value = String(value).replace(/[^\d.-]/g, '');
+  value = String(value).replace(/[^\d-+.-]/g, '');
   if (value && value.includes('.')) {
     value = value.substring(0, value.indexOf('.') + 3);
   }
@@ -8,6 +8,10 @@ export const formatDollarsToCents = (value) => {
 };
 
 export const formatCentsToDollars = (value) => {
-  const cents = parseFloat(String(value).replace(/[^\d.-]/g, ''));
-  return cents ? cents / 100 : 0;
+  var efekt = String(value).replace(/[^\d-+.-]/g, '');
+  const cents = parseFloat(efekt).toFixed(2);
+  if (typeof value === 'string') {
+    return cents ? '+' + cents / 100 : 0;
+  }
+  return cents ? +cents / 100 : 0;
 };
