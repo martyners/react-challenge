@@ -8,7 +8,7 @@ import CardContent from '@mui/material/CardContent';
 import Flexbox from 'flexbox-react';
 import ClickAwayListener from '@mui/base/ClickAwayListener';
 
-export function Modal({ open, onClose, onSubmit, description, children }) {
+export function Modal({ open, onClose, onSubmit, description, children,isDisabled }) {
 
   const cardStyle = {
     position: 'absolute',
@@ -28,10 +28,12 @@ export function Modal({ open, onClose, onSubmit, description, children }) {
   return (
       <MUIModal
         open={open}
+        onBackdropClick={onClose}
         aria-labelledby="modal-modal-title"    
         aria-describedby="modal-modal-description"
-      >
-        <ClickAwayListener onClickAway={onClose}>
+        >
+       
+       
           <Card sx={cardStyle}>
             <CardHeader
               title={<h4>{description}</h4>}
@@ -41,11 +43,11 @@ export function Modal({ open, onClose, onSubmit, description, children }) {
             <Flexbox flexDirection="row" justifyContent="flex-end">
               <CardActions>
                 <Button variant="outlined" size="small" onClick={onClose} >Anuluj</Button>
-                <Button variant="contained" size="small" onClick={onSubmit} >Zapisz</Button>
+                <Button variant="contained" size="small" onClick={onSubmit} disabled={isDisabled()}>Zapisz</Button>
               </CardActions>
             </Flexbox>
           </Card>
-        </ClickAwayListener>
+        
       </MUIModal>
   );
 }
