@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
 
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClientProvider, QueryClient
+} from 'react-query';
 import { ActionHeader, Card, Page } from 'ui';
 import { Grid } from '@mui/material';
 import { BudgetService } from "api";
@@ -13,18 +19,29 @@ import { NoContent } from "ui/atoms/NoContent.jsx";
 import { Error } from "ui/atoms/Error.jsx";
 import AddIcon from '@mui/icons-material/Add';
 import { AddNewBudgetRecord } from 'ui/organisms/AddNewBudgetRecord.modal';
-
+import { LedgerService } from '../api/services/LedgerService';
+import { CategoryService } from '../api/services/CategoryService';
 export const BudgetPage = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  const [open, setOpen] = React.useState(false);
-    
+  const [open, setOpen] = useState(false);
+
+
   const handleClose = () => setOpen(false);
 
-  function onSubmit() {
-    alert('budget submit');
+  function onSubmit(input) {
+    BudgetService.create({ requestBody: input })
+      .then(result => {
+        handleClose();
+        retrieveData();
+      })
+      .catch(() => {
+        // obsluga erroru
+
+      });
+
   }
   function renderCreatedAt(content) {
     return LocalizedDate({ date: content.createdAt });
@@ -64,7 +81,7 @@ export const BudgetPage = () => {
   }
 
   const btnClick = () => {
-    return (<Button variant={'contained'} onClick={()=>setOpen(true)} color={'primary'} startIcon={<AddIcon />}>
+    return (<Button variant={'contained'} onClick={() => setOpen(true)} color={'primary'} startIcon={<AddIcon />}>
       Zdefiniuj budżet
     </Button>);
   }
@@ -135,16 +152,16 @@ export const BudgetPage = () => {
           />
         }
       >
-        
-          <AddNewBudgetRecord
-            open={open}
-            onClose={handleClose}
-            onSubmit={onSubmit}
-            title={"Zdefiniuj budżet"}
-          >
-            no content
-          </AddNewBudgetRecord>
-          
+
+        <AddNewBudgetRecord
+          open={open}
+          onClose={handleClose}
+          onSubmit={onSubmit}
+          title={"Zdefiniuj budżet"}
+        >
+          no content
+        </AddNewBudgetRecord>
+
         <Grid container>
           <Grid item xs={12}>
             {/*Logika wyswietlania */}

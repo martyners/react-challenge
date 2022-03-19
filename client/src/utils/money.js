@@ -7,11 +7,11 @@ export const formatDollarsToCents = (value) => {
   return value ? Math.round(parseFloat(value) * 100) : 0;
 };
 
+
 export const formatCentsToDollars = (value) => {
   var efekt = String(value).replace(/[^\d-+.-]/g, '');
-  const cents = parseFloat(efekt).toFixed(2);
-  if (typeof value === 'string') {
-    return cents ? '+' + cents / 100 : 0;
-  }
-  return cents ? +cents / 100 : 0;
+ 
+  var parsed = parseFloat(efekt / 100).toFixed(2);
+  
+  return parsed;
 };

@@ -16,8 +16,9 @@ import { Money } from "ui/atoms/Money.jsx";
 import { CategoryCell } from "ui/molecules/CategoryCell.jsx";
 import { LedgerService } from "api";
 import { AddNewLedgerRecord } from 'ui/organisms/AddNewLedgerRecord.modal';
-
+//import { useFormState } from "react-use-form-state";
 export const LedgerWidget = () => {
+     
 
   const [open, setOpen] = React.useState(false);
   const [content, setContent] = React.useState("content");
@@ -25,11 +26,21 @@ export const LedgerWidget = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  function onSubmit() {
-    alert('Ledger submit');
+  function onSubmit(input) {
+    LedgerService.create({ requestBody:input})
+    .then(result => {
+      handleClose();
+      queryClient.refetchQueries([LEDGER_QUERY]);
+      return true;
+    })
+    .catch(() => {
+        // obsluga erroru
+        
+    });
+   
   }
 
-  function openSelectedCokolwiek(type) {
+  function openSelectedType(type) {
     setSelectedType(type);
     setOpen(true);
   }
@@ -40,11 +51,13 @@ export const LedgerWidget = () => {
     LedgerService.findAll(),
   );
 
+
   const mutation = useMutation((ids) => LedgerService.remove({ ids }), {
     onSuccess: async () => {
       await queryClient.refetchQueries([LEDGER_QUERY]);
     },
   });
+
 
   const deleteRecords = (ids) => mutation.mutate(ids);
 
@@ -118,7 +131,7 @@ export const LedgerWidget = () => {
               <Button 
               variant="outlined" 
               startIcon={<AddIcon />} 
-              onClick={() => openSelectedCokolwiek('INCOME')} 
+              onClick={() => openSelectedType('INCOME')} 
               >
                 Wpłać
               </Button>
@@ -126,7 +139,7 @@ export const LedgerWidget = () => {
               <Button 
               variant="outlined" 
               startIcon={<RemoveIcon />} 
-              onClick={() => openSelectedCokolwiek('EXPENSE')}>
+              onClick={() => openSelectedType('EXPENSE')}>
                 Wypłać
               </Button>
             </Flexbox>
@@ -137,7 +150,7 @@ export const LedgerWidget = () => {
       <AddNewLedgerRecord
         open={open}
         onClose={handleClose}
-        onSubmit={onSubmit}
+        onSubmit={data=>onSubmit(data)}
         type={selectedType}
       >
         {content}
