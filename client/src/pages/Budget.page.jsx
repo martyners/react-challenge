@@ -21,6 +21,10 @@ import AddIcon from '@mui/icons-material/Add';
 import { AddNewBudgetRecord } from 'ui/organisms/AddNewBudgetRecord.modal';
 import { LedgerService } from '../api/services/LedgerService';
 import { CategoryService } from '../api/services/CategoryService';
+
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
+
 export const BudgetPage = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,7 +32,29 @@ export const BudgetPage = () => {
 
   const [open, setOpen] = useState(false);
 
-
+  const options = {
+    legend: {
+      display: false,
+      position: "right"
+    },
+    elements: {
+      arc: {
+        borderWidth: 0
+      }
+    }
+  };
+  const data = {
+    maintainAspectRatio: false,
+    responsive: false,
+    labels: ["a", "b", "c", "d"],
+    datasets: [
+      {
+        data: [300, 50, 100, 50],
+        //backgroundColor: chartColors,
+        //hoverBackgroundColor: chartColors
+      }
+    ]
+  };
   const handleClose = () => setOpen(false);
 
   function onSubmit(input) {
@@ -143,6 +169,7 @@ export const BudgetPage = () => {
 
   return (
     <Page title="Budżet">
+
       <Card
         title={
           <ActionHeader
@@ -165,6 +192,7 @@ export const BudgetPage = () => {
         <Grid container>
           <Grid item xs={12}>
             {/*Logika wyswietlania */}
+            
             {loading ? <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}><Loader /></div>
               :
               (error ? (<Error />) : results && results.length > 0 ?
@@ -179,5 +207,15 @@ export const BudgetPage = () => {
         </Grid>
       </Card>
     </Page>
+
+
+
+
   );
 };
+
+
+
+
+
+

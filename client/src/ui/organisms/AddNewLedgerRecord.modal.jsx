@@ -108,6 +108,7 @@ export function AddNewLedgerRecord({ open, onClose, onSubmit, type, children, })
         onClose={closeModal}
         onSubmit={() =>
             submitData()
+
         }
         isDisabled={validateForm}
         description={titleContent(type)}
@@ -137,7 +138,7 @@ export function AddNewLedgerRecord({ open, onClose, onSubmit, type, children, })
                     <TextField
                         fullWidth
                         label="Kwota"
-                        value="Kwota"
+                      
                         InputLabelProps={{
                             style: { color: '#000' },
                         }}
