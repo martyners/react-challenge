@@ -4,6 +4,7 @@ import { LedgerWidget, Page } from 'ui';
 import { SummaryService } from '../api/services/SummaryService';
 import { BudgetService } from '../api/services/BudgetService';
 
+
 import { PieChart, Pie, Label, LabelList, Cell, Tooltip, Legend, CartesianGrid, BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 
 export function WalletPage() {
@@ -107,6 +108,7 @@ export function WalletPage() {
               </BarChart>) : "Brak wyników"
             }
           </Grid>
+
         </Grid>
       </Grid>
     </Page>
