@@ -1,73 +1,70 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
 import {
   useQuery,
   useMutation,
   useQueryClient,
-  QueryClientProvider, QueryClient
+  QueryClientProvider,
+  QueryClient,
 } from 'react-query';
 import { ActionHeader, Card, Page } from 'ui';
 import { Grid } from '@mui/material';
-import { BudgetService } from "api";
-import { Table } from "../ui/molecules/table/Table.jsx";
+import { BudgetService } from 'api';
+import { Table } from '../ui/molecules/table/Table.jsx';
 import { Button } from '../ui/atoms/Button';
-import { LocalizedDate } from "ui/atoms/LocalizedDate.jsx";
-import { Money } from "ui/atoms/Money.jsx";
-import { CategoryCell } from "ui/molecules/CategoryCell.jsx";
-import { Loader } from "ui/atoms/Loader.jsx";
-import { NoContent } from "ui/atoms/NoContent.jsx";
-import { Error } from "ui/atoms/Error.jsx";
+import { LocalizedDate } from 'ui/atoms/LocalizedDate.jsx';
+import { Money } from 'ui/atoms/Money.jsx';
+import { CategoryCell } from 'ui/molecules/CategoryCell.jsx';
+import { Loader } from 'ui/atoms/Loader.jsx';
+import { NoContent } from 'ui/atoms/NoContent.jsx';
+import { Error } from 'ui/atoms/Error.jsx';
 import AddIcon from '@mui/icons-material/Add';
 import { AddNewBudgetRecord } from 'ui/organisms/AddNewBudgetRecord.modal';
 import { LedgerService } from '../api/services/LedgerService';
 import { CategoryService } from '../api/services/CategoryService';
 
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Doughnut } from 'react-chartjs-2';
+import MuiAlert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 
 export const BudgetPage = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-
+  const [open2, setOpen2] = useState(false);
   const [open, setOpen] = useState(false);
 
   const options = {
     legend: {
       display: false,
-      position: "right"
+      position: 'right',
     },
     elements: {
       arc: {
-        borderWidth: 0
-      }
-    }
+        borderWidth: 0,
+      },
+    },
   };
   const data = {
     maintainAspectRatio: false,
     responsive: false,
-    labels: ["a", "b", "c", "d"],
+    labels: ['a', 'b', 'c', 'd'],
     datasets: [
       {
         data: [300, 50, 100, 50],
-        //backgroundColor: chartColors,
-        //hoverBackgroundColor: chartColors
-      }
-    ]
+      },
+    ],
   };
   const handleClose = () => setOpen(false);
 
   function onSubmit(input) {
     BudgetService.create({ requestBody: input })
-      .then(result => {
+      .then((result) => {
         handleClose();
         retrieveData();
       })
       .catch(() => {
         // obsluga erroru
-
       });
-
   }
   function renderCreatedAt(content) {
     return LocalizedDate({ date: content.createdAt });
@@ -78,39 +75,52 @@ export const BudgetPage = () => {
   }
 
   function renderPlannedSpending(content) {
-    return (<Money inCents={(Math.round(parseFloat(content.currentSpending * 100) / content.currentSpendingPercent))} />);
+    return (
+      <Money
+        inCents={Math.round(
+          parseFloat(content.currentSpending * 100) /
+            content.currentSpendingPercent,
+        )}
+      />
+    );
   }
 
   function renderStatus(content) {
     if (content.currentSpending === content.amountInCents) {
-      return ("Wykorzystany");
+      return 'Wykorzystany';
     } else if (content.currentSpending > content.amountInCents) {
-      return ("Przekroczone");
-    } else
-      return ("W normie");
+      return 'Przekroczone';
+    } else return 'W normie';
   }
 
   function renderName(content) {
-    return (<CategoryCell color={'#37bad7'} name={content.category.name} />);
+    return <CategoryCell color={'#37bad7'} name={content.category.name} />;
   }
 
   function deleteAction(id) {
     BudgetService.remove({ ids: id })
       .then(() => {
         retrieveData();
-      }
-      )
+      })
       .catch(() => {
         setError(true);
-      }
-      );
+      });
   }
 
   const btnClick = () => {
-    return (<Button variant={'contained'} onClick={() => setOpen(true)} color={'primary'} startIcon={<AddIcon />}>
-      Zdefiniuj budżet
-    </Button>);
-  }
+    return (
+      <>
+        <Button
+          variant={'contained'}
+          onClick={() => setOpen(true)}
+          color={'primary'}
+          startIcon={<AddIcon />}
+        >
+          Zdefiniuj budżet
+        </Button>
+      </>
+    );
+  };
 
   function getUniqueId(content) {
     return content.id;
@@ -119,38 +129,40 @@ export const BudgetPage = () => {
   const [headCells] = useState([
     {
       id: 1,
-      label: "Nazwa",
+      label: 'Nazwa',
       disablePadding: false,
-      renderCell: renderName
-    }, {
+      renderCell: renderName,
+    },
+    {
       id: 2,
-      label: "Planowane wydatki",
+      label: 'Planowane wydatki',
       disablePadding: false,
-      renderCell: renderPlannedSpending
-    }, {
+      renderCell: renderPlannedSpending,
+    },
+    {
       id: 3,
-      label: "Obecna kowota",
+      label: 'Obecna kowota',
       disablePadding: false,
-      renderCell: renderCurrentSpending
+      renderCell: renderCurrentSpending,
     },
     {
       id: 4,
-      label: "Status",
+      label: 'Status',
       disablePadding: false,
-      renderCell: renderStatus
+      renderCell: renderStatus,
     },
     {
       id: 5,
-      label: "Data utworzenia",
+      label: 'Data utworzenia',
       disablePadding: false,
-      renderCell: renderCreatedAt
-    }
+      renderCell: renderCreatedAt,
+    },
   ]);
 
   async function retrieveData() {
     setLoading(true);
     BudgetService.findAll()
-      .then(result => {
+      .then((result) => {
         // po otrzymaniu odpowiedzi - zrob cos z obiektem result
         result && setResults(result);
       })
@@ -164,12 +176,27 @@ export const BudgetPage = () => {
   }
 
   useEffect(() => {
-    retrieveData()
+    retrieveData();
   }, []);
 
   return (
     <Page title="Budżet">
-
+      {open2 && (
+        <Snackbar
+          open={open2}
+          autoHideDuration={500}
+          onClose={() => setOpen2(false)}
+        >
+          <MuiAlert
+            elevation={6}
+            variant="filled"
+            severity="success"
+            sx={{ width: '100%' }}
+          >
+            This is a success message!
+          </MuiAlert>
+        </Snackbar>
+      )}
       <Card
         title={
           <ActionHeader
@@ -179,43 +206,43 @@ export const BudgetPage = () => {
           />
         }
       >
-
         <AddNewBudgetRecord
           open={open}
           onClose={handleClose}
           onSubmit={onSubmit}
-          title={"Zdefiniuj budżet"}
+          title={'Zdefiniuj budżet'}
         >
           no content
         </AddNewBudgetRecord>
 
         <Grid container>
           <Grid item xs={12}>
-            {/*Logika wyswietlania */}
-            
-            {loading ? <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}><Loader /></div>
-              :
-              (error ? (<Error />) : results && results.length > 0 ?
-                <Table
-                  headCells={headCells}
-                  getUniqueId={getUniqueId}
-                  rows={results}
-                  deleteRecords={deleteAction}
-                /> : <NoContent />)
-            }
+            {loading ? (
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: '50vh',
+                }}
+              >
+                <Loader />
+              </div>
+            ) : error ? (
+              <Error />
+            ) : results && results.length > 0 ? (
+              <Table
+                headCells={headCells}
+                getUniqueId={getUniqueId}
+                rows={results}
+                deleteRecords={deleteAction}
+              />
+            ) : (
+              <NoContent />
+            )}
           </Grid>
         </Grid>
       </Card>
     </Page>
-
-
-
-
   );
 };
-
-
-
-
-
-
